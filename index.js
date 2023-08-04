@@ -12,8 +12,8 @@ const app = express();
 // http://localhost:3000/{author}/{repo}/{folder}?branch={branch}
 // http://localhost:3000/{author}/{repo}/{folder}?commit={commit}
 
-app.get('/:author/:repo/:folder?', async (req, res) => {
-	const { author, repo, folder } = req.params;
+app.get('/:author/:repo/:folder?/:subfolder?', async (req, res) => {
+	const { author, repo, folder, subfolder } = req.params;
 	const { commit, branch } = req.query;
 
 	const ref = commit || branch || 'main';
@@ -22,7 +22,7 @@ app.get('/:author/:repo/:folder?', async (req, res) => {
 		return res.status(400).send('Bad url format!');
 	}
 
-	const outputName = `${[author, repo, folder || '', ref].filter(Boolean).join('-')}.tgz`;
+	const outputName = `${[author, repo, subfolder || folder || '', ref].filter(Boolean).join('-')}.tgz`;
 
 	try {
 		const url = `https://codeload.github.com/${author}/${repo}/tar.gz/${ref}`;
@@ -39,7 +39,7 @@ app.get('/:author/:repo/:folder?', async (req, res) => {
 
 				if (folder) {
 					const fileName = file.match(/^[^\/]*/);
-					if (!fileName || fileName.length === 0 || fileName[0] !== folder) {
+					if (!fileName || fileName.length === 0 || (subfolder ? filenName[0] !== subfolder : fileName[0] !== folder)) {
 						return this.pass(entry);
 					}
 				}
