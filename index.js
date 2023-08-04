@@ -36,16 +36,13 @@ app.get('/:author/:repo/:folder?/:subfolder?', async (req, res) => {
 		const transformStream = tt.transform({
 			onEntry(entry) {
 				const file = entry.headers.name.replace(/^[^\/]*./, ''); // strip the hash
-
 				if (folder) {
-					const fileName = file.match(/^[^\/]*/);
-					if (!fileName || fileName.length === 0 || (subfolder ? fileName[0] !== subfolder : fileName[0] !== folder)) {
+					const parts = file.split("/");
+					if (!file.includes([folder, subfolder].join("/")) || parts.length === 0 || !parts[0]) {
 						return this.pass(entry);
 					}
 				}
-
-				const headers = this.util.headersWithNewName(entry.headers, 'package/' + file.replace(/^[^\/]*./, ''));
-
+				const headers = this.util.headersWithNewName(entry.headers, file.replace([folder, subfolder].join("/"), ""));
 				this.push({ ...entry, headers });
 			},
 		});
