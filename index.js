@@ -39,7 +39,7 @@ app.get('/:author/:repo/:folder?/:subfolder?', async (req, res) => {
 
 				if (folder) {
 					const fileName = file.match(/^[^\/]*/);
-					if (!fileName || fileName.length === 0 || (subfolder ? filenName[0] !== subfolder : fileName[0] !== folder)) {
+					if (!fileName || fileName.length === 0 || (subfolder ? fileName[0] !== subfolder : fileName[0] !== folder)) {
 						return this.pass(entry);
 					}
 				}
